@@ -1,0 +1,81 @@
+{
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ianwensink/mlab-tetris.git"
+  },
+  "scripts": {
+    "start": "set NODE_ENV=development && tsc && webpack-dev-server --open --config ./webpack/webpack.config.dev.js",
+    "prebuild": "npm install",
+    "build": "set NODE_ENV=production && webpack --progress --config ./webpack/webpack.config.prod.js",
+    "lint": "npm run lint-ts && lint-js && npm run lint-style",
+    "lint-ts": "tslint src/**/*",
+    "lint-ts-fix": "tslint src/**/* --fix",
+    "lint-js": "eslint --ext .jsx,.js src",
+    "lint-js-fix": "eslint --ext .jsx,.js src --fix",
+    "lint-style": "stylelint \"src/**/*.css\"",
+    "lint-style-fix": "stylelint \"src/**/*.css\" --fix",
+    "lint-fix": "npm run lint-ts-fix && npm run lint-js-fix && npm run lint-style-fix"
+  },
+  "dependencies": {
+    "@types/react": "15.0.24",
+    "@types/react-dom": "15.5.0",
+    "moment": "^2.18.1",
+    "react": "15.5.4",
+    "react-dom": "15.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "7.0.21",
+    "autoprefixer": "7.1.1",
+    "babel-eslint": "^7.2.1",
+    "css-loader": "0.28.1",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.10.3",
+    "eslint-watch": "^3.0.1",
+    "extract-text-webpack-plugin": "2.1.0",
+    "path": "0.12.7",
+    "postcss-custom-properties": "6.0.1",
+    "postcss-import": "10.0.0",
+    "postcss-loader": "2.0.5",
+    "postcss-nesting": "4.0.0",
+    "react-hot-loader": "^3.0.0-beta.7",
+    "source-map-loader": "0.2.1",
+    "style-loader": "0.17.0",
+    "stylelint": "7.10.1",
+    "ts-loader": "2.0.3",
+    "tslint": "5.2.0",
+    "tslint-react": "3.0.0",
+    "typescript": "^2.3.2",
+    "stylelint-config-standard": "^16.0.0",
+    "webpack": "2.5.1",
+    "webpack-dev-server": "2.4.5",
+    "webpack-visualizer-plugin": "0.1.11"
+  },
+  "stylelint": {
+    "extends": "stylelint-config-standard",
+    "rules": {
+      "property-no-unknown": [
+        true,
+        {
+          "ignoreProperties": [
+            "composes"
+          ]
+        }
+      ],
+      "selector-pseudo-class-no-unknown": [
+        true,
+        {
+          "ignorePseudoClasses": [
+            "global"
+          ]
+        }
+      ]
+    }
+  }
+}
