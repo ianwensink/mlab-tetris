@@ -355,6 +355,9 @@ export default class Game {
       for(const [ j, tetkij ] of tetki.entries()) {
         const pxi = this.pieceX + j;
         const pyj = this.pieceY + i;
+        if(tetkij === 0) {
+          continue;
+        }
         this.board[ pyj * this.sizeX + pxi ] = tetkij;
       }
     }
