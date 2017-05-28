@@ -46,6 +46,18 @@
     "quotemark": [
       true,
       "single"
+    ],
+    "whitespace": [
+      true,
+      "check-decl",
+      "check-operator",
+      "check-module",
+      "check-type",
+      "check-preblock"
+    ],
+    "no-console": [
+      true,
+      "log"
     ]
   },
   "jsRules": {

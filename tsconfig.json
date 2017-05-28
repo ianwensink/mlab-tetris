@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2016",
-    "module": "commonjs",
-    "jsx": "react",
+    "target": "es2017",
+    "module": "es6",
     "declaration": false,
     "sourceMap": true,
     "outDir": "./dist/js",
@@ -12,9 +11,7 @@
       "./node_modules/@types"
     ],
     "types": [
-      "node",
-      "react",
-      "react-dom"
+      "node"
     ]
   }
 }

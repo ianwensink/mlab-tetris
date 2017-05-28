@@ -1,15 +1,7 @@
-// /////////////////////////////////////////////////////////////////////////////////////////////////
-//  WebPack 2 PROD Config
-// /////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//  author: Jose Quinto - https://blog.josequinto.com
-//
-//  WebPack 2 Migrating guide: https://webpack.js.org/guides/migrating/
-//
-// /////////////////////////////////////////////////////////////////////////////////////////////////
-
+/* eslint-disable global-require */
 const resolve = require('path').resolve;
 const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   // To enhance the debugging process. More info: https://webpack.js.org/configuration/devtool/
@@ -17,16 +9,14 @@ module.exports = {
   target: 'web',
   entry: {
     bundle: [
-      // activate HMR for React
-      'react-hot-loader/patch',
       // bundle the client for webpack-dev-server
       // and connect to the provided endpoint
       'webpack-dev-server/client?http://localhost:3000',
       // bundle the client for hot reloading
       // only- means to only hot reload for successful updates
-      'webpack/hot/only-dev-server',
+      // 'webpack/hot/only-dev-server',
       // Our app main entry
-      './src/index.tsx',
+      './src/index.ts',
     ],
   },
   output: {
@@ -40,23 +30,14 @@ module.exports = {
     // All options here: https://webpack.js.org/configuration/dev-server/
 
     // enable HMR on the server
-    hot: true,
+    hot: false,
     // match the output path
     contentBase: resolve(__dirname, '../dist'),
     // match the output `publicPath`
     publicPath: '/',
 
-    // Enable to integrate with Docker
-    // host:"0.0.0.0",
-
     port: 3000,
     historyApiFallback: true,
-    // All the stats options here: https://webpack.js.org/configuration/stats/
-    stats: {
-      colors: true, // color is life
-      chunks: false, // this reduces the amount of stuff I see in my terminal; configure to your needs
-      'errors-only': true,
-    },
   },
 
   context: resolve(__dirname, '../'),
@@ -73,6 +54,15 @@ module.exports = {
 
     // do not emit compiled assets that include errors
     new webpack.NoEmitOnErrorsPlugin(),
+
+    new HtmlWebpackPlugin({     // Create HTML file that includes references to bundled CSS and JS.
+      template: '!!ejs-loader!src/index.ejs',
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+      },
+      inject: true,
+    }),
   ],
   watchOptions: {
     poll: true,
@@ -99,43 +89,9 @@ module.exports = {
       {
         test: /\.ts(x?)$/,
         use: [
-          { loader: 'react-hot-loader/webpack' },
           { loader: 'ts-loader' },
         ],
         include: resolve(__dirname, './../src'),
-      },
-      {
-        test: /\.css$/i,
-        include: resolve(__dirname, './../stylesheets'),
-        use: [
-          {
-            loader: 'style-loader',
-          },
-          {
-            loader: 'css-loader',
-            options: {
-              sourceMap: true,
-              importLoaders: 1,
-              minimize: true,
-            },
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              plugins: () => ([
-                require('postcss-import')({
-                  // If you are using postcss-import v8.2.0 & postcss-loader v1.0.0 or later, this is unnecessary.
-                  // addDependencyTo: webpack // Must be first item in list
-                }),
-                require('postcss-nesting')(),  // Following CSS Nesting Module Level 3: http://tabatkins.github.io/specs/css-nesting/
-                require('postcss-custom-properties')(),
-                require('autoprefixer')({
-                  browsers: ['last 2 versions', 'ie >= 9'], // https://github.com/ai/browserslist
-                }),
-              ]),
-            },
-          },
-        ],
       },
       {
         test: /\.css$/i,
@@ -166,7 +122,7 @@ module.exports = {
                 require('postcss-custom-properties')(),
                 // https://github.com/ai/browserslist
                 require('autoprefixer')({
-                  browsers: ['last 2 versions', 'ie >= 9'],
+                  browsers: ['last 1 version'],
                 }),
               ]),
             },
