@@ -23,7 +23,7 @@ module.exports = {
   output: {
     path: resolve(__dirname, './../dist'),
     filename: '[name].js',
-    publicPath: '/',
+    publicPath: '',
   },
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.
