@@ -17,7 +17,7 @@ module.exports = {
   devtool: 'source-map',
   target: 'web',
   entry: {
-    bundle: './src/index.ts',
+    bundle: './src/client/index.ts',
   },
   context: resolve(__dirname, '../'),
   output: {
@@ -41,42 +41,10 @@ module.exports = {
       filename: 'main.css',
       allChunks: true,
     }),
-    // Plugings for optimizing size and performance.
-    // Here you have all the available by now:
-    //    Webpack 1. https://github.com/webpack/webpack/blob/v1.13.3/lib/optimize
-    //    Webpack 2. https://github.com/webpack/webpack/tree/master/lib/optimize
-    // new webpack.optimize.UglifyJsPlugin({
-    //   compress: {
-    //     warnings: false,
-    //     screw_ie8: true,
-    //     conditionals: true,
-    //     unused: true,
-    //     comparisons: true,
-    //     sequences: true,
-    //     dead_code: true,
-    //     evaluate: true,
-    //     if_return: true,
-    //     join_vars: true,
-    //     drop_console: true,
-    //     drop_debugger: true,
-    //     global_defs: {
-    //       __REACT_HOT_LOADER__: undefined, // eslint-disable-line no-undefined
-    //     },
-    //   },
-    //   minimize: true,
-    //   debug: false,
-    //   sourceMap: true,
-    //   output: {
-    //     comments: false,
-    //   },
-    //
-    // }),
-    // Included by default in webpack 2
-    // new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.AggressiveMergingPlugin(),
 
     new HtmlWebpackPlugin({     // Create HTML file that includes references to bundled CSS and JS.
-      template: '!!ejs-loader!src/index.ejs',
+      template: '!!ejs-loader!src/client/index.ejs',
       minify: {
         removeComments: true,
         collapseWhitespace: true,

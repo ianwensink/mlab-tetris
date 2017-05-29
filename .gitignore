@@ -1,4 +1,5 @@
 dist
+.env
 
 ### Node template
 # Logs

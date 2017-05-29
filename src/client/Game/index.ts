@@ -1,5 +1,8 @@
-/* tslint:disable-next-line:no-var-requires */
+/* tslint:disable:no-var-requires */
 const styles: any = require('./Game.css');
+// const socket = require('socket.io-client')('127.0.0.1:6006');
+const socket = (window as any).io.connect('127.0.0.1:6006');
+/* tslint:enable:no-var-requires */
 
 /**
  * Credits to http://htmltetris.com/
@@ -208,6 +211,18 @@ export default class Game {
   }
 
   private startGame() {
+    socket.on('clickedKey', (data: string) => {
+      // console.log(data.data);
+      const onIndex = data.indexOf(':1');
+      const offIndex = data.indexOf(':0');
+      if(onIndex > -1) {
+        // console.log(data.data.slice(0, onIndex), 0);
+        this.keyDownFactory(parseInt(data.slice(0, onIndex), 0));
+      } else if(offIndex > -1) {
+        this.keyUpFactory(parseInt(data.slice(0, offIndex), 0));
+      }
+    });
+
     console.info('Start game');
     this.bc = document.getElementById('board_canvas') as HTMLCanvasElement;
     this.bcc = this.bc.getContext('2d') as CanvasRenderingContext2D;
@@ -476,9 +491,13 @@ export default class Game {
       keynum = e.which;
     }
 
+    this.keyDownFactory(keynum as number);
+  }
+
+  private keyDownFactory(key: number) {
     for(const [ i, button ] of this.buttonList.entries()) {
       for(const buttonKey of button) {
-        if(keynum === buttonKey && !this.buttonStates[ i ]) {
+        if(key === buttonKey && !this.buttonStates[ i ]) {
           this.moves[ i ]();
           this.stopRepeat(i); // this is insurance
           this.setupRepeat(i);
@@ -498,9 +517,13 @@ export default class Game {
       keynum = e.which;
     }
 
+    this.keyUpFactory(keynum as number);
+  }
+
+  private keyUpFactory(key: number) {
     for(const [ i, button ] of this.buttonList.entries()) {
       for(const buttonKey of button) {
-        if(keynum === buttonKey) {
+        if(key === buttonKey) {
           this.buttonStates[ i ] = 0;
           this.stopRepeat(i);
         }

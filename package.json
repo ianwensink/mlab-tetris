@@ -8,7 +8,8 @@
     "url": "git+https://github.com/ianwensink/mlab-tetris.git"
   },
   "scripts": {
-    "start": "set NODE_ENV=development && tsc && webpack-dev-server --open --config ./webpack/webpack.config.dev.js",
+    "start": "node ./src/server.js",
+    "dev": "set NODE_ENV=development && tsc && webpack-dev-server --open --config ./webpack/webpack.config.dev.js",
     "prebuild": "npm install",
     "build": "set NODE_ENV=production && webpack --progress --config ./webpack/webpack.config.prod.js",
     "lint": "npm run lint-ts && lint-js && npm run lint-style",
@@ -67,5 +68,10 @@
         }
       ]
     }
+  },
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "particle-api-js": "^6.5.0",
+    "socket.io": "^2.0.1"
   }
 }

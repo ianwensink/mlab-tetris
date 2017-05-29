@@ -16,7 +16,7 @@ module.exports = {
       // only- means to only hot reload for successful updates
       // 'webpack/hot/only-dev-server',
       // Our app main entry
-      './src/index.ts',
+      './src/client/index.ts',
     ],
   },
   output: {
@@ -56,7 +56,7 @@ module.exports = {
     new webpack.NoEmitOnErrorsPlugin(),
 
     new HtmlWebpackPlugin({     // Create HTML file that includes references to bundled CSS and JS.
-      template: '!!ejs-loader!src/index.ejs',
+      template: '!!ejs-loader!src/client/index.ejs',
       minify: {
         removeComments: true,
         collapseWhitespace: true,
