@@ -3,4 +3,4 @@
  */
 import Game from './Game/index';
 
-const game: Game = new Game();
+const game: Game = new Game(40);

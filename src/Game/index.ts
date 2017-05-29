@@ -21,7 +21,7 @@ export default class Game {
   private autoMoveDownInterval: number;
   private animationUpdateInterval: number;
 
-  private animPositionX: number = 3;
+  private animPositionX: number = 0;
   private animPositionY: number = 0;
   private animRotation: number = 0;
   private drawIndicators: boolean = false;
@@ -41,7 +41,7 @@ export default class Game {
   // this is for the rotation animation -- must know where in local grid did the piece rotate around each coordinate is a triple, the first two are x,y, and the last is to indicate whether the point is in the center of the block or in the corner to the bottom right between blocks. These are the points which may be rotated around to retain block alignment, if that makes any sense.
   private tet_center_rot: Array<Array<number | boolean>> = [ [ 1, 1, true ], [ 1, 1, true ], [ 1, 1, true ], [ 1, 1, true ], [ 0, 0, false ], [ 1, 1, true ], [ 1, 1, false ] ];
 
-  private pieceX: number = 3;
+  private pieceX: number = 0;
   private pieceY: number = 0;
   private curPiece: number = 0;
   private curRotation: number = 0;
@@ -71,8 +71,8 @@ export default class Game {
     [ 1, 0 ], [ 1, 1 ], [ 1, -1 ], [ 2, 0 ], [ 2, 1 ], [ 2, -1 ], [ 1, 2 ], [ 1, -2 ], // move left for wall kicking
   ];
   private shiftright: number = 0; // 0 = left, 1 = right
-  private repeatRateInitial: number = 200;
-  private repeatRate: number = 100;
+  private repeatRateInitial: number = 100;
+  private repeatRate: number = 40;
   private repeatIntervals: number[] = [ 0, 0, 0, 0 ];
   private repeatInitPassed: boolean[] = [ false, false, false, false ];
   private buttonList: number[][] = [ [ 37, 74 ], [], [ 39, 76 ], [ 40, 75 ], [ 38, 73, 88, 82 ], [ 90, 84 ], [ 68, 32 ], [], [ 67 ], [ 77 ], [ 78 ] ];
@@ -337,7 +337,7 @@ export default class Game {
   }
 
   private nextPiece() {
-    this.pieceX = 3;
+    this.pieceX = this.sizeX / 2 - 2;
     this.pieceY = 0;
     this.animPositionX = this.pieceX;
     this.animPositionY = this.pieceY;
