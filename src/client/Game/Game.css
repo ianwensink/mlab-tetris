@@ -7,10 +7,23 @@ canvas {
   top: 0;
 }
 
-#code {
+.code-heading {
   position: fixed;
-  top: 30px;
-  font-family:sans-serif;
-  font-size: 30px;
+  top: 31px;
+  font-family: sans-serif;
+  font-size: 28px;
   left: 414px;
+  text-transform: uppercase;
+}
+
+.code {
+  position: fixed;
+  top: 90px;
+  font-family: sans-serif;
+  font-size: 45px;
+  left: 414px;
+  background: black;
+  color: white;
+  padding: 5px;
+  letter-spacing:2px;
 }

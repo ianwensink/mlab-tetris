@@ -5,29 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 </head>
 <body>
-<div style="position: fixed; top: 10px; font-family: sans-serif; font-size: 30px; left: 414px;"> <span id="score"></span></div>
 <div>
-<h1 style=" position: fixed;
-    top: 31px;
-    font-family: sans-serif;
-    font-size: 28px;
-    left: 414px;
-    text-transform: uppercase;">De code is :</h1>
-  <span id="code" style="position: fixed;
-    top: 90px;
-    font-family: sans-serif;
-    font-size: 45px;
-    left: 414px;
-    background: black;
-    color: white;
-    padding: 5px;
-    letter-spacing:2px;">
-
-  </span>
+    <h1 class='code'>De code is :</h1>
+    <span class='code' id='code'></span>
 </div>
 <canvas id='board_canvas'></canvas>
 <canvas id='shadow_canvas'></canvas>
-<canvas id='animated_canvas'></canvas>
+<canvas class='animated_canvas' id='animated_canvas'></canvas>
 <script src='http://127.0.0.1:6006/socket.io/socket.io.js'></script>
 <script>window.io = io;</script>
 </body>
