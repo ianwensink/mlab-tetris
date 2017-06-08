@@ -15,8 +15,8 @@ let tokenInterval;
 let socket = false;
 
 udpServer.on('message', (buffer) => {
-  const data = buffer.toString();
   if(socket) {
+    const data = buffer.toString();
     socket.emit('clickedKey', data);
   }
 });

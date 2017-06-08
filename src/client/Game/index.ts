@@ -81,7 +81,7 @@ export default class Game {
   private repeatRate: number = 40;
   private repeatIntervals: number[] = [ 0, 0, 0, 0 ];
   private repeatInitPassed: boolean[] = [ false, false, false, false ];
-  private buttonList: number[][] = [ [ 37, 74 ], [], [ 39, 76 ], [ 40, 75 ], [ 38, 73, 88, 82 ], [ 90, 84 ], [ 68, 32 ], [], [ 67 ], [ 77 ], [ 78 ] ];
+  private buttonList: number[][] = [ [ 37, 74, 65 ], [], [ 39, 76, 68 ], [ 40, 75 ], [ 38, 73, 88, 82, 87 ], [ 90, 84 ], [ 32 ], [], [ 67 ], [ 77 ], [ 78 ] ];
   private buttonStates: number[] = new Array(this.buttonList.length);
 
   private moves: Array<() => void> = [
