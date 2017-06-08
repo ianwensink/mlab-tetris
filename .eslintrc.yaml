@@ -35,9 +35,6 @@ rules:
       ignoreUrls: true
       ignoreStrings: true
       ignoreTemplateLiterals: true
-  jsx-quotes:
-    - 2
-    - prefer-single
   no-return-assign:
     - 0
   no-console:

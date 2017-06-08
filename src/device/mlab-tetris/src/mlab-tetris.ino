@@ -5,10 +5,10 @@ int ledPin = D5;
 int bufferLength = 4;
 
 
-String UDP_IP = "192.168.0.101";
+String UDP_IP = "172.20.10.7";
 int UDP_PORT = 9000;
 
-String keys[] = { "68" };
+String keys[] = { "40" };
 int buttonPins[] = { D2 };
 bool buttonStates[sizeof(keys)];
 

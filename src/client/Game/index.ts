@@ -212,7 +212,7 @@ export default class Game {
 
   private startGame() {
     socket.on('clickedKey', (data: string) => {
-      // console.log(data.data);
+      // console.log(data);
       const onIndex = data.indexOf(':1');
       const offIndex = data.indexOf(':0');
       if(onIndex > -1) {
