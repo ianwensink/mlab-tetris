@@ -1,0 +1,3 @@
+MONGOURI=mongodb://127.0.0.1/mlab-tetris
+PORT=6006
+IP=127.0.0.1
