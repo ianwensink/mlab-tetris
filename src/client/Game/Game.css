@@ -1,8 +1,16 @@
 @import '../vars.css';
 
 canvas {
-  width: 750px;
-  height: 926px;
+  width: 400px;
+  height: 600px;
   position: fixed;
   top: 0;
+}
+
+#code {
+  position: fixed;
+  top: 30px;
+  font-family:sans-serif;
+  font-size: 30px;
+  left: 414px;
 }

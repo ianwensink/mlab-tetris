@@ -3,6 +3,7 @@ const styles: any = require('./Game.css');
 // const socket = require('socket.io-client')('127.0.0.1:6006');
 const socket = (window as any).io.connect('127.0.0.1:6006');
 /* tslint:enable:no-var-requires */
+import Piece from '../Piece/index'
 
 /**
  * Credits to http://htmltetris.com/
@@ -19,6 +20,7 @@ export default class Game {
   private gapsize: number = 2;
   private bordersize: number = 2;
   private score: number = 0;
+  private code: number = 0;
   private colors: string[] = [ '#999', '#F00', '#0F0', '#22F', '#F0F', '#FF0', '#F70', '#0EE' ]; // None, Z, S, J, T, O, L, I
   private positionFromLeft: number = 10;
   private autoMoveDownInterval: number;
@@ -59,6 +61,7 @@ export default class Game {
   private ac: HTMLCanvasElement;
   private sc: HTMLCanvasElement;
   private scoreEl: HTMLElement;
+  private codeEl: HTMLElement;
   private bcc: CanvasRenderingContext2D;
 
   // left, right
@@ -211,6 +214,7 @@ export default class Game {
   }
 
   private startGame() {
+    const piece = new Piece();
     socket.on('clickedKey', (data: string) => {
       // console.log(data);
       const onIndex = data.indexOf(':1');
@@ -229,6 +233,7 @@ export default class Game {
     this.ac = document.getElementById('animated_canvas') as HTMLCanvasElement;
     this.sc = document.getElementById('shadow_canvas') as HTMLCanvasElement;
     this.scoreEl = document.getElementById('score') as HTMLElement;
+    this.codeEl = document.getElementById('code') as HTMLElement;
 
     for(let i = 0; i < this.size; i++) {
       this.board[ i ] = 0;
@@ -358,9 +363,9 @@ export default class Game {
     this.animPositionY = this.pieceY;
     this.curRotation = 0;
     this.curPiece = this.generator();
-    // // if(this.kick()) {
-    // //   this.gameOver();
-    // // }
+    //if(this.kick()) {
+       //this.gameOver();
+     //}
     this.updateShadow();
   }
 
@@ -605,5 +610,18 @@ export default class Game {
       this.score = 0;
     }
     this.scoreEl.innerHTML = `${this.score}`;
+    if(this.score == 100) { // reached zero
+      this.codeEl.innerHTML = `1`;
+    }
+    else if(this.score == 200) { // reached zero
+      this.codeEl.innerHTML = `12`;
+    }
+    else if(this.score == 300) { // reached zero
+      this.codeEl.innerHTML = `123`;
+    }
+    else if(this.score == 400) { // reached zero
+      this.codeEl.innerHTML = `1234`;
+    }
+
   }
 }
