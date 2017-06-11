@@ -40,6 +40,7 @@ export default class Piece {
   private tetromino_I: number[][][] = [ [ [], [ 7, 7, 7, 7 ] ], [ [ 0, 0, 7 ], [ 0, 0, 7 ], [ 0, 0, 7 ], [ 0, 0, 7 ] ], [ [], [], [ 7, 7, 7, 7 ] ], [ [ 0, 7 ], [ 0, 7 ], [ 0, 7 ], [ 0, 7 ] ] ];
   // tetromino geometry data
   private _tetrominos: number[][][][] = [ this.tetromino_Z, this.tetromino_S, this.tetromino_J, this.tetromino_T, this.tetromino_O, this.tetromino_L, this.tetromino_I ];
+  // private _tetrominos: number[][][][] = [ this.tetromino_J, this.tetromino_T, this.tetromino_O, this.tetromino_L, this.tetromino_I ];
   // this is for the rotation animation -- must know where in local grid did the piece rotate around each coordinate is a triple, the first two are x,y, and the last is to indicate whether the point is in the center of the block or in the corner to the bottom right between blocks. These are the points which may be rotated around to retain block alignment, if that makes any sense.
   private tet_center_rot: Array<Array<number | boolean>> = [ [ 1, 1, true ], [ 1, 1, true ], [ 1, 1, true ], [ 1, 1, true ], [ 0, 0, false ], [ 1, 1, true ], [ 1, 1, false ] ];
 

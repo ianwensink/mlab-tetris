@@ -12,7 +12,7 @@ const socket = (window as any).io.connect('127.0.0.1:6006');
 
 export default class Game {
   public static states = {
-    START: 'START',
+    INTRO: 'INTRO',
     STARTED: 'STARTED',
     FINISHED: 'FINISHED',
     GAME_OVER: 'GAME_OVER',
@@ -31,7 +31,7 @@ export default class Game {
 
   public canvasHeight: number;
 
-  public state: string = Game.states.START;
+  public state: string = Game.states.INTRO;
   public bc: HTMLCanvasElement;
 
   private bcc: CanvasRenderingContext2D;
@@ -55,7 +55,7 @@ export default class Game {
     this.boardSizeX = sizeX;
     this.boardSizeY = sizeY;
 
-    this.startGame();
+    this.setUpGame();
   }
 
   public onFixPiece(piece: Piece) {
@@ -67,7 +67,7 @@ export default class Game {
     this.state = Game.states.GAME_OVER;
   }
 
-  private startGame() {
+  private setUpGame() {
     this.bc = document.getElementById('board_canvas') as HTMLCanvasElement;
     this.bcc = this.bc.getContext('2d') as CanvasRenderingContext2D;
     this.codeEl = document.getElementById('code') as HTMLElement;
@@ -77,7 +77,19 @@ export default class Game {
       this.board[ i ] = 0;
     }
 
+    document.addEventListener('keydown', (e: KeyboardEvent) => this.onClickedKey(e));
+    document.addEventListener('keyup', (e: KeyboardEvent) => this.onClickedKey(e));
+
+    this.state = Game.states.INTRO;
+
+    this.updateSizing();
+    this.draw();
+  }
+
+  private startGame() {
     this.unMount();
+
+    this.setUpGame();
 
     socket.on('clickedKey', (data: string) => this.onClickedKey(data));
     document.addEventListener('keydown', (e: KeyboardEvent) => this.onClickedKey(e));
@@ -90,7 +102,6 @@ export default class Game {
 
     this.state = Game.states.STARTED;
 
-    this.updateSizing();
     this.update();
   }
 
@@ -252,6 +263,9 @@ export default class Game {
       case Game.states.GAME_OVER:
         this.stateEl.innerHTML = '<span class="game-over heading">Game Over</span><span class="description">Druk op de rode knop om opnieuw te beginnen.</span>';
         this.stateEl.classList.remove('hidden');
+        break;
+      case Game.states.INTRO:
+        this.stateEl.innerHTML = '<span class="intro heading">Gefeliciteerd!</span><span class="description">Jullie laatste obstakel is het vinden van de code voor de [...]! Je krijgt de code door dit spel te spelen. Let op: samenwerking is hier het belangrijkst! Druk op de rode knop om het spel te starten.</span>';
         break;
       default:
         this.stateEl.innerHTML = '';
