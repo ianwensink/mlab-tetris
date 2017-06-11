@@ -206,7 +206,7 @@ export default class Piece {
     this.animPositionX = this.pieceX;
     this.animPositionY = this.pieceY;
     this.curRotation = 0;
-    this.curPiece = 6;
+    this.curPiece = this.generator();
     // if(this.kick()) {
     // this.gameOver();
     // }
