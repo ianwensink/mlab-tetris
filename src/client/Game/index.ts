@@ -101,6 +101,7 @@ export default class Game {
     for(let i = 0; i < this.size; i++) {
       this.board[ i ] = 0;
     }
+    this.drawBoard();
 
     this.pieces.push(PieceFactory.getPiece(this, 1));
     this.addPieceTimeout = window.setTimeout(() => this.pieces.push(PieceFactory.getPiece(this, 2)), 3000);
