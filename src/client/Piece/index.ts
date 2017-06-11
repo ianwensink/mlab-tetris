@@ -192,6 +192,9 @@ export default class Piece {
 
     this.acc.clearRect(0, 0, this.game.boardOffsetX * 2 + this.game.tileSizeX * this.game.boardSizeX + this.game.tileGapSize * (this.game.boardSizeX - 1), this.game.boardOffsetY * 2 + this.game.tileSizeY * this.game.boardSizeY + this.game.tileGapSize * (this.game.boardSizeY - 1));
     this.acc.save();
+
+    this.scc.clearRect(0, 0, this.game.boardOffsetX * 2 + this.game.tileSizeX * this.game.boardSizeX + this.game.tileGapSize * (this.game.boardSizeX - 1), this.game.boardOffsetY * 2 + this.game.tileSizeY * this.game.boardSizeY + this.game.tileGapSize * (this.game.boardSizeY - 1));
+    this.scc.save();
   }
 
   private generator: () => number = () => Math.floor(Math.random() * this._tetrominos.length);
@@ -306,17 +309,6 @@ export default class Piece {
     }
   }
 
-  private keyDownFunc(e: KeyboardEvent) {
-    let keynum;
-    if(!(e.which)) {
-      keynum = e.keyCode;
-    } else if(e.which) {
-      keynum = e.which;
-    }
-
-    this.keyDownFactory(keynum as number);
-  }
-
   private keyDownFactory(key: number) {
     for(const [ control, buttonKey ] of Object.entries(this.controls)) {
       if(key === buttonKey && !this.buttonStates[ control ]) {
@@ -328,17 +320,6 @@ export default class Piece {
     }
 
     this.update();
-  }
-
-  private keyUpFunc(e: KeyboardEvent) {
-    let keynum;
-    if(!(e.which)) {
-      keynum = e.keyCode;
-    } else if(e.which) {
-      keynum = e.which;
-    }
-
-    this.keyUpFactory(keynum as number);
   }
 
   private keyUpFactory(key: number) {
