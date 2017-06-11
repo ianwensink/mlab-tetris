@@ -1,6 +1,6 @@
+import Game from '../Game/index';
 import IControls from './IControls';
 import IMoves from './IMoves';
-import Game from '../Game/index';
 
 export default class Piece {
   public pieceX: number = 0;
@@ -24,6 +24,8 @@ export default class Piece {
 
   private ac: HTMLCanvasElement;
   private acc: CanvasRenderingContext2D;
+  private sc: HTMLCanvasElement;
+  private scc: CanvasRenderingContext2D;
 
   // <editor-fold desc="Shapes">
 
@@ -62,7 +64,7 @@ export default class Piece {
   private lockTimer: number;
 
   private repeatRateInitial: number = 100;
-  private repeatRate: number = 40;
+  private repeatRate: number = 200;
   private repeatIntervals: IControls = { left: 0, rotate: 0, right: 0 };
   private repeatInitPassed: IControls = { left: 0, rotate: 0, right: 0 };
 
@@ -75,7 +77,6 @@ export default class Piece {
         this.pieceX += 1;
       }
       this.shiftRight = 0;
-      this.updateShadow();
       this.clearLockTimer();
     },
     right: () => {
@@ -84,7 +85,6 @@ export default class Piece {
         this.pieceX -= 1;
       }
       this.shiftRight = 1;
-      this.updateShadow();
       this.clearLockTimer();
     },
     rotate: () => {
@@ -95,7 +95,6 @@ export default class Piece {
       } else {
         this.animRotation = -Math.PI / 2.0;
       }
-      this.updateShadow();
       this.clearLockTimer();
     },
     // up direction movement is a cheat in standard tetris
@@ -135,20 +134,27 @@ export default class Piece {
     this.color = color;
     this.controls = controls;
 
-    document.addEventListener('keydown', (e) => this.keydownfunc(e));
-    document.addEventListener('keyup', (e) => this.keyupfunc(e));
+    document.addEventListener('keydown', (e) => this.keyDownFunc(e));
+    document.addEventListener('keyup', (e) => this.keyUpFunc(e));
 
     this.ac = document.getElementById(`animated_canvas${this.type}`) as HTMLCanvasElement;
     if(!this.ac) {
       const canvas = document.createElement('canvas');
       canvas.id = `animated_canvas${this.type}`;
       canvas.className = 'animated_canvas';
-      (document.getElementById('animated_canvas') as HTMLElement).insertAdjacentElement('afterEnd', canvas);
+      (document.getElementById('board_canvas') as HTMLElement).insertAdjacentElement('afterEnd', canvas);
       this.ac = document.getElementById(`animated_canvas${this.type}`) as HTMLCanvasElement;
+
+      const shadowCanvas = document.createElement('canvas');
+      shadowCanvas.id = `animated_shadow_canvas${this.type}`;
+      shadowCanvas.className = 'animated_shadow_canvas';
+      this.ac.insertAdjacentElement('beforeBegin', shadowCanvas);
+      this.sc = document.getElementById(`animated_shadow_canvas${this.type}`) as HTMLCanvasElement;
     }
     this.acc = this.ac.getContext('2d') as CanvasRenderingContext2D;
+    this.scc = this.sc.getContext('2d') as CanvasRenderingContext2D;
 
-    this.autoMoveDownInterval = window.setInterval(() => this.moveDownIntervalFunc(), 300);
+    this.autoMoveDownInterval = window.setInterval(() => this.moveDownIntervalFunc(), 200);
     this.animationUpdateInterval = window.setInterval(() => this.animationUpdateIntervalFunc(), 16);
 
     this.updateSizing();
@@ -158,6 +164,7 @@ export default class Piece {
 
   public update() {
     this.drawPiece(this.acc);
+    this.drawShadow(this.scc);
   }
 
   public onClickedKey(data: string) {
@@ -173,6 +180,8 @@ export default class Piece {
   public updateSizing() {
     this.ac.width = this.game.canvasWidth;
     this.ac.height = this.game.canvasHeight;
+    this.sc.width = this.game.canvasWidth;
+    this.sc.height = this.game.canvasHeight;
   }
 
   private generator: () => number = () => Math.floor(Math.random() * this._tetrominos.length);
@@ -197,11 +206,10 @@ export default class Piece {
     this.animPositionX = this.pieceX;
     this.animPositionY = this.pieceY;
     this.curRotation = 0;
-    this.curPiece = this.generator();
+    this.curPiece = 6;
     // if(this.kick()) {
     // this.gameOver();
     // }
-    this.updateShadow();
   }
 
   private fixPiece() {
@@ -264,20 +272,13 @@ export default class Piece {
     return 1; // return failure
   }
 
-  // Does not need to be called every frame like updatePieces is.
-  // will be called from left and right moves, also
-  private updateShadow() {
-    const ctx = this.game.sc.getContext('2d') as CanvasRenderingContext2D;
-    this.drawShadow(ctx);
-  }
-
   private setupRepeat(control: string) {
     if(this.repeatIntervals[ control ] === 0) {
       this.repeatIntervals[ control ] = window.setTimeout(() => {
-          this.moves[ control ]();
-          this.repeatIntervals[ control ] = window.setInterval(this.moves[ control ], this.repeatRate);
-          this.repeatInitPassed[ control ] = 1;
-        }, this.repeatRateInitial);
+        this.moves[ control ]();
+        this.repeatIntervals[ control ] = window.setInterval(this.moves[ control ], this.repeatRate);
+        this.repeatInitPassed[ control ] = 1;
+      }, this.repeatRateInitial);
     }
   }
 
@@ -292,7 +293,7 @@ export default class Piece {
     }
   }
 
-  private keydownfunc(e: KeyboardEvent) {
+  private keyDownFunc(e: KeyboardEvent) {
     let keynum;
     if(!(e.which)) {
       keynum = e.keyCode;
@@ -316,7 +317,7 @@ export default class Piece {
     this.update();
   }
 
-  private keyupfunc(e: KeyboardEvent) {
+  private keyUpFunc(e: KeyboardEvent) {
     let keynum;
     if(!(e.which)) {
       keynum = e.keyCode;
@@ -330,7 +331,7 @@ export default class Piece {
   private keyUpFactory(key: number) {
     for(const [ control, buttonKey ] of Object.entries(this.controls)) {
       if(key === buttonKey) {
-        this.buttonStates[control] = 0;
+        this.buttonStates[ control ] = 0;
         this.stopRepeat(control);
       }
     }
@@ -352,7 +353,7 @@ export default class Piece {
       centerY += this.game.tileSizeY / 2 + this.game.tileGapSize;
     }
 
-    context.translate(this.game.boardOffsetX + this.animPositionX * (this.game.tileSizeX + this.game.tileGapSize) + centerX, this.game.boardOffsetY + this.animPositionY * (this.game.tileSizeY + this.game.tileGapSize) + centerY);
+    context.translate(this.game.boardOffsetX + this.animPositionX * (this.game.tileSizeX + this.game.tileGapSize) + centerX + this.game.tileGapSize, this.game.boardOffsetY + this.animPositionY * (this.game.tileSizeY + this.game.tileGapSize) + centerY);
     context.rotate(this.animRotation);
     context.translate(-centerX, -centerY);
 
@@ -390,7 +391,7 @@ export default class Piece {
     context.clearRect(0, 0, this.game.boardOffsetX * 2 + this.game.tileSizeX * this.game.boardSizeX + this.game.tileGapSize * (this.game.boardSizeX - 1), this.game.boardOffsetY * 2 + this.game.tileSizeY * this.game.boardSizeY + this.game.tileGapSize * (this.game.boardSizeY - 1));
     context.save();
     context.fillStyle = '#777';
-    context.translate(this.game.boardOffsetX + gridX * (this.game.tileSizeX + this.game.tileGapSize), this.game.boardOffsetY + gridY * (this.game.tileSizeY + this.game.tileGapSize));
+    context.translate(this.game.boardOffsetX + gridX * (this.game.tileSizeX + this.game.tileGapSize) + this.game.tileGapSize, this.game.boardOffsetY + gridY * (this.game.tileSizeY + this.game.tileGapSize));
     for(let j = 0; j < tetk.length; j++) {
       const tetkj = tetk[ j ];
       for(let i = 0; i < tetkj.length; i++) {

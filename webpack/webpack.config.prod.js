@@ -82,7 +82,7 @@ module.exports = {
                 options: {
                   sourceMap: true,
                   importLoaders: 1,
-                  modules: true,
+                  modules: false,
                   camelCase: true,
                   localIdentName: '[name]_[local]_[hash:base64:5]',
                   minimize: true,

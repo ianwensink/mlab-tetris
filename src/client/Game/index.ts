@@ -24,14 +24,12 @@ export default class Game {
   public canvasHeight: number;
 
   public bc: HTMLCanvasElement;
-  public ac: HTMLCanvasElement;
-  public sc: HTMLCanvasElement;
   private bcc: CanvasRenderingContext2D;
 
   private codeEl: HTMLElement;
   private borderSize: number = 2;
   private score: number = 0;
-  private code: number[] = [ 1, 2, 3, 4 ];
+  private code: number[] = [ 5, 1, 9, 3 ];
 
   private pieces: Piece[] = [];
 
@@ -52,12 +50,10 @@ export default class Game {
   }
 
   private startGame() {
-    socket.on('clickedKey', this.onClickedKey);
+    socket.on('clickedKey', (data: string) => this.onClickedKey(data));
 
     this.bc = document.getElementById('board_canvas') as HTMLCanvasElement;
     this.bcc = this.bc.getContext('2d') as CanvasRenderingContext2D;
-    this.ac = document.getElementById('animated_canvas') as HTMLCanvasElement;
-    this.sc = document.getElementById('shadow_canvas') as HTMLCanvasElement;
     this.codeEl = document.getElementById('code') as HTMLElement;
 
     for(let i = 0; i < this.size; i++) {
@@ -97,14 +93,14 @@ export default class Game {
 
     this.canvasWidth = (this.boardOffsetX * 2 + this.tileSizeX * this.boardSizeX + this.tileGapSize * (this.boardSizeX - 1));
     this.canvasHeight = (this.boardOffsetY * 2 + this.tileSizeY * this.boardSizeY + this.tileGapSize * (this.boardSizeY - 1));
-    this.bc.width = this.ac.width = this.sc.width = this.canvasWidth;
-    this.bc.height = this.ac.height = this.sc.height = this.canvasHeight;
+    this.bc.width = this.canvasWidth;
+    this.bc.height = this.canvasHeight;
 
     for(const piece of this.pieces) {
       piece.updateSizing();
     }
 
-    this.bc.style.left = this.ac.style.left = this.sc.style.left = `${this.boardMargin}px`;
+    this.bc.style.left = `${this.boardMargin}px`;
 
     this.drawBoard();
     this.updatePieces();
@@ -125,15 +121,17 @@ export default class Game {
         this.drawBoard();
       }
     }
-    switch(numRowsCleared) {
-      case 3:
-        this.applyScore(400);
-        break;
-      case 4:
-        this.applyScore(1000);
-        break;
-      default:
-        this.applyScore(numRowsCleared * 100);
+    if(numRowsCleared) {
+      switch(numRowsCleared) {
+        case 3:
+          this.applyScore(400);
+          break;
+        case 4:
+          this.applyScore(1000);
+          break;
+        default:
+          this.applyScore(numRowsCleared * 100);
+      }
     }
   }
 
@@ -165,16 +163,20 @@ export default class Game {
 
   private applyScore(amount: number) {
     this.score += amount;
+    this.printScore();
+  }
+
+  private printScore() {
     let length = 0;
-    if(this.score > 400) {
+    if(this.score >= 400) {
       length = 4;
-    } else if(this.score > 300) {
+    } else if(this.score >= 300) {
       length = 3;
-    } else if(this.score > 200) {
+    } else if(this.score >= 200) {
       length = 2;
-    } else if(this.score > 100) {
+    } else if(this.score >= 100) {
       length = 1;
     }
-    this.codeEl.innerHTML = this.code.slice(0, length).join(' ');
+    this.codeEl.innerHTML = this.code.slice(0, length).map(c => `<span class='code-item'>${c}</span>`).join('') + ('<span class="code-item asterisk">*</span>'.repeat(this.code.length - length));
   }
 }
