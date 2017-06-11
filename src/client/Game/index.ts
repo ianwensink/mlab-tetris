@@ -11,6 +11,13 @@ const socket = (window as any).io.connect('127.0.0.1:6006');
  */
 
 export default class Game {
+  public static states = {
+    START: 'START',
+    STARTED: 'STARTED',
+    FINISHED: 'FINISHED',
+    GAME_OVER: 'GAME_OVER',
+  };
+
   public board: Array<number | string> = [];
   public boardSizeX: number;
   public boardSizeY: number;
@@ -21,14 +28,21 @@ export default class Game {
   public tileGapSize: number = 2;
   public boardMargin: number = 10;
   public canvasWidth: number;
+
   public canvasHeight: number;
 
+  public state: string = Game.states.START;
   public bc: HTMLCanvasElement;
-  private bcc: CanvasRenderingContext2D;
 
+  private bcc: CanvasRenderingContext2D;
   private codeEl: HTMLElement;
+  private stateEl: HTMLElement;
   private borderSize: number = 2;
   private score: number = 0;
+
+  private RAFId: number;
+  private addPieceTimeout: number;
+
   private code: number[] = [ 5, 1, 9, 3 ];
 
   private pieces: Piece[] = [];
@@ -49,23 +63,41 @@ export default class Game {
     this.clearRowCheck(piece.pieceY, piece.tetrominos[ piece.curPiece ][ piece.curRotation ].length);
   }
 
+  public gameOver() {
+    this.state = Game.states.GAME_OVER;
+  }
+
   private startGame() {
+    socket.removeAllListeners('clickedKey');
     socket.on('clickedKey', (data: string) => this.onClickedKey(data));
 
     this.bc = document.getElementById('board_canvas') as HTMLCanvasElement;
     this.bcc = this.bc.getContext('2d') as CanvasRenderingContext2D;
     this.codeEl = document.getElementById('code') as HTMLElement;
+    this.stateEl = document.getElementById('state-text') as HTMLElement;
 
     for(let i = 0; i < this.size; i++) {
       this.board[ i ] = 0;
     }
 
+    for(const piece of this.pieces) {
+      piece.unMount();
+    }
+
+    this.pieces = [];
+
+    cancelAnimationFrame(this.RAFId);
+    clearTimeout(this.addPieceTimeout);
+
     this.pieces.push(PieceFactory.getPiece(this, 1));
-    window.setTimeout(() => this.pieces.push(PieceFactory.getPiece(this, 2)), 3000);
+    this.addPieceTimeout = window.setTimeout(() => this.pieces.push(PieceFactory.getPiece(this, 2)), 3000);
 
     this.applyScore(0); // to init
 
+    this.state = Game.states.STARTED;
+
     this.updateSizing();
+    this.update();
   }
 
   private drawBoard() {
@@ -145,28 +177,46 @@ export default class Game {
     }
   }
 
-  private gameOver() {
-    console.info('Game Over');
-  }
-
   private updatePieces() {
     for(const piece of this.pieces) {
       piece.update();
     }
   }
 
+  private update() {
+    this.updatePieces();
+    this.draw();
+
+    this.RAFId = requestAnimationFrame(() => this.update());
+  }
+
+  private draw() {
+    this.drawStateText();
+    this.drawCode();
+  }
+
   private onClickedKey(data: string) {
-    for(const piece of this.pieces) {
-      piece.onClickedKey(data);
+    switch(data) {
+      case '82:0': // R-key:UP
+        this.reset();
+        break;
+      default:
+        for(const piece of this.pieces) {
+          piece.onClickedKey(data);
+        }
     }
+  }
+
+  private reset() {
+    this.startGame();
   }
 
   private applyScore(amount: number) {
     this.score += amount;
-    this.printScore();
+    this.drawCode();
   }
 
-  private printScore() {
+  private drawCode() {
     let length = 0;
     if(this.score >= 400) {
       length = 4;
@@ -177,6 +227,18 @@ export default class Game {
     } else if(this.score >= 100) {
       length = 1;
     }
-    this.codeEl.innerHTML = this.code.slice(0, length).map(c => `<span class='code-item'>${c}</span>`).join('') + ('<span class="code-item asterisk">*</span>'.repeat(this.code.length - length));
+    this.codeEl.innerHTML = this.code.slice(0, length).map((c) => `<span class='code-item'>${c}</span>`).join('') + ('<span class="code-item asterisk">*</span>'.repeat(this.code.length - length));
+  }
+
+  private drawStateText() {
+    switch(this.state) {
+      case Game.states.GAME_OVER:
+        this.stateEl.innerHTML = '<span class="game-over heading">Game Over</span><span class="description">Druk op de rode knop om opnieuw te beginnen.</span>';
+        this.stateEl.classList.remove('hidden');
+        break;
+      default:
+        this.stateEl.innerHTML = '';
+        this.stateEl.classList.add('hidden');
+    }
   }
 }

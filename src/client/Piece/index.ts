@@ -63,6 +63,7 @@ export default class Piece {
 
   private lockTimer: number;
 
+  private fallInterval: number = 200;
   private repeatRateInitial: number = 100;
   private repeatRate: number = 200;
   private repeatIntervals: IControls = { left: 0, rotate: 0, right: 0 };
@@ -134,10 +135,11 @@ export default class Piece {
     this.color = color;
     this.controls = controls;
 
-    document.addEventListener('keydown', (e) => this.keyDownFunc(e));
-    document.addEventListener('keyup', (e) => this.keyUpFunc(e));
+    document.addEventListener('keydown', (e: KeyboardEvent) => this.keyDownFunc(e));
+    document.addEventListener('keyup', (e: KeyboardEvent) => this.keyUpFunc(e));
 
     this.ac = document.getElementById(`animated_canvas${this.type}`) as HTMLCanvasElement;
+    this.sc = document.getElementById(`animated_shadow_canvas${this.type}`) as HTMLCanvasElement;
     if(!this.ac) {
       const canvas = document.createElement('canvas');
       canvas.id = `animated_canvas${this.type}`;
@@ -154,7 +156,7 @@ export default class Piece {
     this.acc = this.ac.getContext('2d') as CanvasRenderingContext2D;
     this.scc = this.sc.getContext('2d') as CanvasRenderingContext2D;
 
-    this.autoMoveDownInterval = window.setInterval(() => this.moveDownIntervalFunc(), 200);
+    this.autoMoveDownInterval = window.setInterval(() => this.moveDownIntervalFunc(), this.fallInterval);
     this.animationUpdateInterval = window.setInterval(() => this.animationUpdateIntervalFunc(), 16);
 
     this.updateSizing();
@@ -163,8 +165,10 @@ export default class Piece {
   }
 
   public update() {
-    this.drawPiece(this.acc);
-    this.drawShadow(this.scc);
+    if(this.game.state === Game.states.STARTED) {
+      this.drawPiece(this.acc);
+      this.drawShadow(this.scc);
+    }
   }
 
   public onClickedKey(data: string) {
@@ -184,6 +188,17 @@ export default class Piece {
     this.sc.height = this.game.canvasHeight;
   }
 
+  public unMount() {
+    clearInterval(this.autoMoveDownInterval);
+    clearInterval(this.animationUpdateInterval);
+
+    this.acc.clearRect(0, 0, this.game.boardOffsetX * 2 + this.game.tileSizeX * this.game.boardSizeX + this.game.tileGapSize * (this.game.boardSizeX - 1), this.game.boardOffsetY * 2 + this.game.tileSizeY * this.game.boardSizeY + this.game.tileGapSize * (this.game.boardSizeY - 1));
+    this.acc.save();
+
+    document.removeEventListener('keydown', (e: KeyboardEvent) => this.keyDownFunc(e));
+    document.removeEventListener('keyup', (e: KeyboardEvent) => this.keyUpFunc(e));
+  }
+
   private generator: () => number = () => Math.floor(Math.random() * this._tetrominos.length);
 
   private moveDownIntervalFunc() {
@@ -201,15 +216,18 @@ export default class Piece {
   }
 
   private nextPiece() {
+    if(this.game.state !== Game.states.STARTED) {
+      return;
+    }
     this.pieceX = this.game.boardSizeX / 2 - 2;
     this.pieceY = 0;
     this.animPositionX = this.pieceX;
     this.animPositionY = this.pieceY;
     this.curRotation = 0;
     this.curPiece = this.generator();
-    // if(this.kick()) {
-    // this.gameOver();
-    // }
+    if(this.kick()) {
+      this.game.gameOver();
+    }
   }
 
   private fixPiece() {

@@ -1,7 +1,12 @@
 @import '../vars.css';
 
+:root {
+  --gameWidth: var(--gameWidth, 700px);
+  --stateTextMargin: var(--stateTextMargin, 70px);
+}
+
 canvas {
-  width: 700px;
+  width: var(--gameWidth);
   height: calc(100vh - 90px);
   top: 80px;
   position: absolute;
@@ -24,8 +29,8 @@ canvas {
   background: black;
   color: white;
   padding: 5px;
-  letter-spacing: 10px;
-  text-indent: 10px;
+  letter-spacing: 15px;
+  text-indent: 15px;
   height: 50px;
 
   & .code-item {
@@ -37,5 +42,32 @@ canvas {
 
   & .asterisk {
     top: 15px;
+  }
+}
+
+.state-text {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  text-align: center;
+  font-family: 'helvetica';
+  font-size: 40px;
+  width: calc(var(--gameWidth) - var(--stateTextMargin));
+  margin-left: calc(var(--stateTextMargin) / 2);
+  border-radius: 3px;
+  padding: 16px;
+  box-sizing: border-box;
+  line-height: 1.5em;
+
+  &.hidden {
+    display: none;
+  }
+
+  & .heading {
+    text-transform: uppercase;
+    display: block;
+    font-size: 110%;
   }
 }
