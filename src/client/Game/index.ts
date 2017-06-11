@@ -30,9 +30,18 @@ export default class Game {
   public canvasWidth: number;
 
   public canvasHeight: number;
-
-  public state: string = Game.states.INTRO;
   public bc: HTMLCanvasElement;
+
+  public get state() {
+    return this._state;
+  }
+
+  public set state(value) {
+    this._state = value;
+    this.update();
+  }
+
+  private _state: string = Game.states.INTRO;
 
   private bcc: CanvasRenderingContext2D;
   private codeEl: HTMLElement;
@@ -40,7 +49,6 @@ export default class Game {
   private borderSize: number = 2;
   private score: number = 0;
 
-  private RAFId: number;
   private addPieceTimeout: number;
 
   private code: number[] = [ 5, 1, 9, 3 ];
@@ -79,6 +87,7 @@ export default class Game {
 
     document.addEventListener('keydown', (e: KeyboardEvent) => this.onClickedKey(e));
     document.addEventListener('keyup', (e: KeyboardEvent) => this.onClickedKey(e));
+    socket.on('clickedKey', (data: string) => this.onClickedKey(data));
 
     this.state = Game.states.INTRO;
 
@@ -89,11 +98,9 @@ export default class Game {
   private startGame() {
     this.unMount();
 
-    this.setUpGame();
-
-    socket.on('clickedKey', (data: string) => this.onClickedKey(data));
-    document.addEventListener('keydown', (e: KeyboardEvent) => this.onClickedKey(e));
-    document.addEventListener('keyup', (e: KeyboardEvent) => this.onClickedKey(e));
+    for(let i = 0; i < this.size; i++) {
+      this.board[ i ] = 0;
+    }
 
     this.pieces.push(PieceFactory.getPiece(this, 1));
     this.addPieceTimeout = window.setTimeout(() => this.pieces.push(PieceFactory.getPiece(this, 2)), 3000);
@@ -112,13 +119,7 @@ export default class Game {
 
     this.pieces = [];
 
-    cancelAnimationFrame(this.RAFId);
     clearTimeout(this.addPieceTimeout);
-
-    document.removeEventListener('keydown', (e: KeyboardEvent) => this.onClickedKey(e));
-    document.removeEventListener('keyup', (e: KeyboardEvent) => this.onClickedKey(e));
-
-    socket.removeAllListeners('clickedKey');
   }
 
   private drawBoard() {
@@ -207,8 +208,6 @@ export default class Game {
   private update() {
     this.updatePieces();
     this.draw();
-
-    this.RAFId = requestAnimationFrame(() => this.update());
   }
 
   private draw() {
