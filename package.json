@@ -10,7 +10,6 @@
   "scripts": {
     "start": "node ./src/server.js",
     "dev": "set NODE_ENV=development && tsc && webpack-dev-server --open --config ./webpack/webpack.config.dev.js",
-    "prebuild": "npm install",
     "build": "set NODE_ENV=production && webpack --progress --config ./webpack/webpack.config.prod.js",
     "lint": "npm run lint-ts && lint-js && npm run lint-style",
     "lint-ts": "tslint src/**/*",
