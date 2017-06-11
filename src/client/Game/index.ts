@@ -68,9 +68,6 @@ export default class Game {
   }
 
   private startGame() {
-    socket.removeAllListeners('clickedKey');
-    socket.on('clickedKey', (data: string) => this.onClickedKey(data));
-
     this.bc = document.getElementById('board_canvas') as HTMLCanvasElement;
     this.bcc = this.bc.getContext('2d') as CanvasRenderingContext2D;
     this.codeEl = document.getElementById('code') as HTMLElement;
@@ -80,14 +77,11 @@ export default class Game {
       this.board[ i ] = 0;
     }
 
-    for(const piece of this.pieces) {
-      piece.unMount();
-    }
+    this.unMount();
 
-    this.pieces = [];
-
-    cancelAnimationFrame(this.RAFId);
-    clearTimeout(this.addPieceTimeout);
+    socket.on('clickedKey', (data: string) => this.onClickedKey(data));
+    document.addEventListener('keydown', (e: KeyboardEvent) => this.onClickedKey(e));
+    document.addEventListener('keyup', (e: KeyboardEvent) => this.onClickedKey(e));
 
     this.pieces.push(PieceFactory.getPiece(this, 1));
     this.addPieceTimeout = window.setTimeout(() => this.pieces.push(PieceFactory.getPiece(this, 2)), 3000);
@@ -98,6 +92,22 @@ export default class Game {
 
     this.updateSizing();
     this.update();
+  }
+
+  private unMount() {
+    for(const piece of this.pieces) {
+      piece.unMount();
+    }
+
+    this.pieces = [];
+
+    cancelAnimationFrame(this.RAFId);
+    clearTimeout(this.addPieceTimeout);
+
+    document.removeEventListener('keydown', (e: KeyboardEvent) => this.onClickedKey(e));
+    document.removeEventListener('keyup', (e: KeyboardEvent) => this.onClickedKey(e));
+
+    socket.removeAllListeners('clickedKey');
   }
 
   private drawBoard() {
@@ -195,14 +205,21 @@ export default class Game {
     this.drawCode();
   }
 
-  private onClickedKey(data: string) {
-    switch(data) {
+  private onClickedKey(e: string|KeyboardEvent) {
+    let key: string = e as string;
+    const event = e as KeyboardEvent;
+
+    if(typeof event.which !== 'undefined') {
+      key = `${event.which}:${event.type === 'keydown' ? '1' : '0'}`;
+    }
+
+    switch(key) {
       case '82:0': // R-key:UP
         this.reset();
         break;
       default:
         for(const piece of this.pieces) {
-          piece.onClickedKey(data);
+          piece.onClickedKey(key);
         }
     }
   }
