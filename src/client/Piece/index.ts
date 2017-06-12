@@ -15,6 +15,7 @@ export default class Piece {
   private type: number;
   private game: Game;
   private color: string;
+  private shadowColor: string;
   private controls: IControls;
   private autoMoveDownInterval: number;
   private animationUpdateInterval: number;
@@ -39,8 +40,8 @@ export default class Piece {
   private tetromino_L: number[][][] = [ [ [ 0, 0, 6 ], [ 6, 6, 6 ] ], [ [ 0, 6 ], [ 0, 6 ], [ 0, 6, 6 ] ], [ [], [ 6, 6, 6 ], [ 6 ] ], [ [ 6, 6 ], [ 0, 6 ], [ 0, 6 ] ] ];
   private tetromino_I: number[][][] = [ [ [], [ 7, 7, 7, 7 ] ], [ [ 0, 0, 7 ], [ 0, 0, 7 ], [ 0, 0, 7 ], [ 0, 0, 7 ] ], [ [], [], [ 7, 7, 7, 7 ] ], [ [ 0, 7 ], [ 0, 7 ], [ 0, 7 ], [ 0, 7 ] ] ];
   // tetromino geometry data
-  private _tetrominos: number[][][][] = [ this.tetromino_Z, this.tetromino_S, this.tetromino_J, this.tetromino_T, this.tetromino_O, this.tetromino_L, this.tetromino_I ];
-  // private _tetrominos: number[][][][] = [ this.tetromino_J, this.tetromino_T, this.tetromino_O, this.tetromino_L, this.tetromino_I ];
+  // private _tetrominos: number[][][][] = [ this.tetromino_Z, this.tetromino_S, this.tetromino_J, this.tetromino_T, this.tetromino_O, this.tetromino_L, this.tetromino_I ];
+  private _tetrominos: number[][][][] = [ this.tetromino_J, this.tetromino_T, this.tetromino_O, this.tetromino_L, this.tetromino_I ];
   // this is for the rotation animation -- must know where in local grid did the piece rotate around each coordinate is a triple, the first two are x,y, and the last is to indicate whether the point is in the center of the block or in the corner to the bottom right between blocks. These are the points which may be rotated around to retain block alignment, if that makes any sense.
   private tet_center_rot: Array<Array<number | boolean>> = [ [ 1, 1, true ], [ 1, 1, true ], [ 1, 1, true ], [ 1, 1, true ], [ 0, 0, false ], [ 1, 1, true ], [ 1, 1, false ] ];
 
@@ -64,9 +65,9 @@ export default class Piece {
 
   private lockTimer: number;
 
-  private fallInterval: number = 200;
+  private fallInterval: number = 300;
   private repeatRateInitial: number = 100;
-  private repeatRate: number = 200;
+  private repeatRate: number = 300;
   private repeatIntervals: IControls = { left: 0, rotate: 0, right: 0 };
   private repeatInitPassed: IControls = { left: 0, rotate: 0, right: 0 };
 
@@ -122,18 +123,19 @@ export default class Piece {
       if(this.isPieceInside()) {
         this.pieceY -= 1;
         if(!this.lockTimer) {
-          this.lockTimer = window.setTimeout(() => {
-            this.moves.down();
-          }, 600);
+          // this.lockTimer = window.setTimeout(() => {
+          this.moves.down();
+          // }, 600);
         }
       }
     },
   };
 
-  constructor(type: number, game: Game, color: string, controls: IControls) {
+  constructor(type: number, game: Game, color: string, shadowColor: string, controls: IControls) {
     this.type = type;
     this.game = game;
     this.color = color;
+    this.shadowColor = shadowColor;
     this.controls = controls;
 
     this.ac = document.getElementById(`animated_canvas${this.type}`) as HTMLCanvasElement;
@@ -384,7 +386,7 @@ export default class Piece {
     const tetk = this._tetrominos[ this.curPiece ][ this.curRotation ];
     context.clearRect(0, 0, this.game.boardOffsetX * 2 + this.game.tileSizeX * this.game.boardSizeX + this.game.tileGapSize * (this.game.boardSizeX - 1), this.game.boardOffsetY * 2 + this.game.tileSizeY * this.game.boardSizeY + this.game.tileGapSize * (this.game.boardSizeY - 1));
     context.save();
-    context.fillStyle = '#777';
+    context.fillStyle = this.shadowColor;
     context.translate(this.game.boardOffsetX + gridX * (this.game.tileSizeX + this.game.tileGapSize) + this.game.tileGapSize, this.game.boardOffsetY + gridY * (this.game.tileSizeY + this.game.tileGapSize));
     for(let j = 0; j < tetk.length; j++) {
       const tetkj = tetk[ j ];
