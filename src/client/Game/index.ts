@@ -263,11 +263,11 @@ export default class Game {
   private drawStateText() {
     switch(this.state) {
       case Game.states.GAME_OVER:
-        this.stateEl.innerHTML = '<span class="game-over heading">Game Over</span><span class="description">Druk op de rode knop om opnieuw te beginnen.</span>';
+        this.stateEl.innerHTML = '<span class="game-over heading">Game Over</span><span class="description">Druk op de witte knop om opnieuw te beginnen.</span>';
         this.stateEl.classList.remove('hidden');
         break;
       case Game.states.INTRO:
-        this.stateEl.innerHTML = '<span class="intro heading">Gefeliciteerd!</span><span class="description">Jullie laatste obstakel is het vinden van de code voor de [...]! Je krijgt de code door dit spel te spelen. Let op: samenwerking is hier het belangrijkst! Druk op de rode knop om het spel te starten.</span>';
+        this.stateEl.innerHTML = '<span class="intro heading">Gefeliciteerd!</span><span class="description">Jullie laatste obstakel is het vinden van de code voor de kluis! Je krijgt de code door dit spel te spelen. Let op: samenwerking is hier het belangrijkst! Druk op de witte knop om het spel te starten.</span>';
         break;
       default:
         this.stateEl.innerHTML = '';
