@@ -75,6 +75,10 @@ export default class Game {
     this.state = Game.states.GAME_OVER;
   }
 
+  private finishGame() {
+    this.state = Game.states.FINISHED;
+  }
+
   private setUpGame() {
     this.bc = document.getElementById('board_canvas') as HTMLCanvasElement;
     this.bcc = this.bc.getContext('2d') as CanvasRenderingContext2D;
@@ -243,6 +247,11 @@ export default class Game {
 
   private applyScore(amount: number) {
     this.score += amount;
+
+    if(this.score >= 400) {
+      this.finishGame();
+    }
+
     this.drawCode();
   }
 
@@ -268,6 +277,11 @@ export default class Game {
         break;
       case Game.states.INTRO:
         this.stateEl.innerHTML = '<span class="intro heading">Gefeliciteerd!</span><span class="description">Jullie laatste obstakel is het vinden van de code voor de kluis! Je krijgt de code door dit spel te spelen. Let op: samenwerking is hier het belangrijkst! Druk op de witte knop om het spel te starten.</span>';
+        this.stateEl.classList.remove('hidden');
+        break;
+      case Game.states.FINISHED:
+        this.stateEl.innerHTML = `<span class="intro heading">Wow!</span><span class="description">Goed gedaan! Jullie hebben succesvol de code vrijgespeeld en kunnen nu de kluis open maken.</span><div><h1 class="code-heading">De code is:</h1><span class="code" id="code">${this.code.map((c) => `<span class='code-item'>${c}</span>`).join('')}</span></div>`;
+        this.stateEl.classList.remove('hidden');
         break;
       default:
         this.stateEl.innerHTML = '';
