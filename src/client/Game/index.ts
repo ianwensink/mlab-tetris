@@ -3,7 +3,7 @@ import Piece from '../Piece/index';
 import PieceFactory from '../Piece/PieceFactory';
 
 require('./Game.css');
-const socket = (window as any).io.connect('127.0.0.1:6006');
+const socket = (window as any).io ? (window as any).io.connect('127.0.0.1:6006') : false;
 /* tslint:enable:no-var-requires */
 
 /**
@@ -87,7 +87,9 @@ export default class Game {
 
     document.addEventListener('keydown', (e: KeyboardEvent) => this.onClickedKey(e));
     document.addEventListener('keyup', (e: KeyboardEvent) => this.onClickedKey(e));
-    socket.on('clickedKey', (data: string) => this.onClickedKey(data));
+    if(socket) {
+      socket.on('clickedKey', (data: string) => this.onClickedKey(data));
+    }
 
     this.state = Game.states.INTRO;
 
