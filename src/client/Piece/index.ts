@@ -66,7 +66,7 @@ export default class Piece {
   private lockTimer: number;
 
   private fallInterval: number = 300;
-  private repeatRateInitial: number = 100;
+  private repeatRateInitial: number = 300;
   private repeatRate: number = 300;
   private repeatIntervals: IControls = { left: 0, rotate: 0, right: 0 };
   private repeatInitPassed: IControls = { left: 0, rotate: 0, right: 0 };
