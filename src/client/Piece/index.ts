@@ -242,6 +242,10 @@ export default class Piece {
   }
 
   private fixPiece() {
+    if(this.game.state !== Game.states.STARTED) {
+      return;
+    }
+
     const tetk = this._tetrominos[ this.curPiece ][ this.curRotation ];
     for(const [ i, tetki ] of tetk.entries()) {
       for(const [ j, tetkij ] of tetki.entries()) {
