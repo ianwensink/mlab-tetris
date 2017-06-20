@@ -55,6 +55,8 @@ export default class Game {
 
   private pieces: Piece[] = [];
 
+  private helpTimeout: number;
+
   private get size(): number {
     return this.boardSizeX * this.boardSizeY;
   }
@@ -183,16 +185,7 @@ export default class Game {
       }
     }
     if(numRowsCleared) {
-      switch(numRowsCleared) {
-        case 3:
-          this.applyScore(400);
-          break;
-        case 4:
-          this.applyScore(1000);
-          break;
-        default:
-          this.applyScore(numRowsCleared * 100);
-      }
+      this.applyScore(numRowsCleared * 100);
     }
   }
 
@@ -247,12 +240,19 @@ export default class Game {
 
   private applyScore(amount: number) {
     this.score += amount;
+    this.setHelpTimer();
 
     if(this.score >= 400) {
       this.finishGame();
     }
 
     this.drawCode();
+  }
+
+  private setHelpTimer() {
+    clearTimeout(this.helpTimeout);
+
+    this.helpTimeout = window.setTimeout(() => this.applyScore(100), 1000 * 120);
   }
 
   private drawCode() {
