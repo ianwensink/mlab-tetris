@@ -223,7 +223,7 @@ export default class Piece {
         this.animationUpdateIntervalFunc(time);
         this.animationUpdateLastCall = time;
       });
-    }, 32);
+    }, 24);
   }
 
   private nextPiece() {
