@@ -33,7 +33,6 @@ function getStream() {
   if(!accessToken) {
     return;
   }
-  // console.info('AT', accessToken);
   clearInterval(tokenInterval);
 
   const udpVars = [
