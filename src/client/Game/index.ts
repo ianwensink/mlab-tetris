@@ -240,10 +240,13 @@ export default class Game {
 
   private applyScore(amount: number) {
     this.score += amount;
-    this.setHelpTimer();
 
     if(this.score >= 400) {
       this.finishGame();
+    }
+
+    if(this.state === Game.states.STARTED) {
+      this.setHelpTimer();
     }
 
     this.drawCode();
