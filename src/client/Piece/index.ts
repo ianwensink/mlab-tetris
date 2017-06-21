@@ -196,6 +196,7 @@ export default class Piece {
   public unMount() {
     clearInterval(this.autoMoveDownInterval);
     clearTimeout(this.animationUpdateTimeout);
+    this.animationUpdateTimeout = 0;
 
     this.acc.clearRect(0, 0, this.game.boardOffsetX * 2 + this.game.tileSizeX * this.game.boardSizeX + this.game.tileGapSize * (this.game.boardSizeX - 1), this.game.boardOffsetY * 2 + this.game.tileSizeY * this.game.boardSizeY + this.game.tileGapSize * (this.game.boardSizeY - 1));
     this.acc.save();
@@ -220,8 +221,10 @@ export default class Piece {
         // move animRotation closer to zero
         this.animRotation -= this.animRotation * 0.3;
         this.update();
-        this.animationUpdateIntervalFunc(time);
-        this.animationUpdateLastCall = time;
+        if(this.animationUpdateTimeout) {
+          this.animationUpdateIntervalFunc(time);
+          this.animationUpdateLastCall = time;
+        }
       });
     }, 24);
   }
