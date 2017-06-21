@@ -52,6 +52,9 @@ export default class Game {
   private addPieceTimeout: number;
 
   private code: number[] = [ 5, 1, 9, 3 ];
+  private unlockCode: number[] = [ 3, 8, 4, 9 ];
+  private inputUnlockCode: number[] = [];
+  private unlocked = false;
 
   private pieces: Piece[] = [];
 
@@ -227,6 +230,39 @@ export default class Game {
       case '82:0': // R-key:UP
         this.reset();
         break;
+      case '48:0':
+        this.addUnlockCode(0);
+        break;
+      case '49:0':
+        this.addUnlockCode(1);
+        break;
+      case '50:0':
+        this.addUnlockCode(2);
+        break;
+      case '51:0':
+        this.addUnlockCode(3);
+        break;
+      case '52:0':
+        this.addUnlockCode(4);
+        break;
+      case '53:0':
+        this.addUnlockCode(5);
+        break;
+      case '54:0':
+        this.addUnlockCode(6);
+        break;
+      case '55:0':
+        this.addUnlockCode(7);
+        break;
+      case '56:0':
+        this.addUnlockCode(8);
+        break;
+      case '57:0':
+        this.addUnlockCode(9);
+        break;
+      case '8:0':
+        this.removeUnlockCode();
+        break;
       default:
         for(const piece of this.pieces) {
           piece.onClickedKey(key);
@@ -234,8 +270,38 @@ export default class Game {
     }
   }
 
+  private addUnlockCode(which: number) {
+    if(this.inputUnlockCode.length < this.unlockCode.length) {
+      this.inputUnlockCode.push(which);
+      this.draw();
+    }
+  }
+
+  private removeUnlockCode() {
+    this.inputUnlockCode.pop();
+    this.draw();
+  }
+
   private reset() {
-    this.startGame();
+    if(this.unlock()) {
+      this.startGame();
+    }
+  }
+
+  private unlock() {
+    if(this.unlocked) {
+       return true;
+    }
+
+    let correct = true;
+
+    this.inputUnlockCode.forEach((code, i) => {
+      if(correct) {
+        correct = code === this.unlockCode[i];
+      }
+    });
+
+    return this.inputUnlockCode.length === this.unlockCode.length && correct;
   }
 
   private applyScore(amount: number) {
@@ -279,7 +345,7 @@ export default class Game {
         this.stateEl.classList.remove('hidden');
         break;
       case Game.states.INTRO:
-        this.stateEl.innerHTML = '<span class="intro heading">Gefeliciteerd!</span><span class="description">Jullie laatste obstakel is het vinden van de code voor de kluis! Je krijgt de code door dit spel te spelen. Let op: samenwerking is hier het belangrijkst! Druk op de witte knop om het spel te starten.</span>';
+        this.stateEl.innerHTML = `<span class="intro heading">Gefeliciteerd!</span><span class="description">Jullie laatste obstakel is het vinden van de code voor de kluis! Je krijgt de code door dit spel te spelen. Let op: samenwerking is hier het belangrijkst! Druk op de witte knop om het spel te starten.</span><span class="description">(===&===)</span><span class="code" id="code" style='display:block;'>${this.inputUnlockCode.map((c) => `<span class='code-item'>${c}</span>`).join('') + ('<span class="code-item asterisk">*</span>'.repeat(this.unlockCode.length - this.inputUnlockCode.length))}</span>`;
         this.stateEl.classList.remove('hidden');
         break;
       case Game.states.FINISHED:
